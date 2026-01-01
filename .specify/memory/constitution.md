@@ -1,50 +1,45 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version change: [CONSTITUTION_VERSION] -> 1.0.0
+- List of modified principles: Defined initial principles (Bun-Native, Idempotency, Opinionated Modernity, Interactive Experience, Self-Contained Deliverables).
+- Added sections: Defined all sections (Security, Development, Governance).
+- Templates requiring updates: plan-template.md (Generic reference valid).
+- Follow-up TODOs: None.
+-->
+# Ainab Stack Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Bun-Native Runtime
+We prioritize Bun APIs (e.g., `Bun.file`, `Bun.write`, `Bun.argv`) for file I/O, shell interactions, and runtime tasks. We avoid Node.js compatibility layers unless strictly necessary for specific library support. This ensures maximum performance and simplicity, leveraging the runtime's native capabilities.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Idempotency & Safety
+Scripts and scaffolding tools MUST be safe to re-run. They MUST NOT overwrite user work without explicit consent (e.g., a `--force` flag). Tools should check for the existence of files or directories before creation and provide clear feedback or skips if artifacts already exist.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Opinionated Modernity
+We enforce the "Ainab Stack" defaults: Next.js (App Router), Tailwind CSS, Biome (for linting/formatting), Drizzle ORM (SQLite), and NextAuth. We do not support alternative configurations in the core scaffolder to maintain maintainability and a clear "golden path".
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Interactive Experience
+CLI tools MUST provide a helpful interactive mode. If arguments are missing, the tool should prompt the user for input rather than failing immediately. Feedback must be clear and color-coded (e.g., Blue for info, Green for success, Yellow for warning, Red for error).
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Self-Contained Deliverables
+The output of any scaffolder or generator MUST be a fully functional project. `bun dev` (or the equivalent start command) MUST work immediately after setup without requiring manual intervention or additional configuration steps from the user.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Security
+- **No Secrets in Code**: Never commit secrets, API keys, or credentials. Use `.env` files and ensure they are added to `.gitignore`.
+- **Dependency Safety**: Review dependencies for security vulnerabilities before adding them.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development
+- **Script usage**: Use `bun run` for executing scripts to ensure the correct runtime environment.
+- **Code Style**: Adhere to the rules enforced by Biome. Run `bun run lint:fix` before committing.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+This constitution governs the development of the Ainab Stack scaffolder and its generated templates.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+**Amendments**: Changes to this constitution require a PR review and consensus from maintainers.
+**Versioning**: We follow Semantic Versioning for this document.
+- MAJOR: Removal or fundamental change of a core principle.
+- MINOR: Addition of a new principle or significant clarification.
+- PATCH: Typo fixes or minor wording adjustments.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-01-01 | **Last Amended**: 2026-01-01
