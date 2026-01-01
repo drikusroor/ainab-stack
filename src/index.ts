@@ -11,7 +11,7 @@ export async function main() {
   program
     .name("ainab-stack")
     .description("CLI to scaffold Ainab Stack projects")
-    .version("0.0.2");
+    .version("0.0.3");
 
   program
     .argument("[project-name]", "Name of the project")
