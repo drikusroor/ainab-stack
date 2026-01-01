@@ -1,44 +1,53 @@
-import { Command } from "commander";
-import chalk from "chalk";
 import { join } from "node:path";
-import { getProjectName } from "./prompts.ts";
-import { scaffold } from "./scaffold.ts";
-import type { ScaffoldOptions } from "./types.ts";
+import { existsSync, cpSync } from "node:fs";
 
 export async function main() {
-  const program = new Command();
+  const args = Bun.argv.slice(2);
+  let projectName = args.find(arg => !arg.startsWith("-"));
+  const force = args.includes("--force") || args.includes("-f");
 
-  program
-    .name("ainab-stack")
-    .description("CLI to scaffold Ainab Stack projects")
-    .version("0.0.3");
+  console.log("\x1b[34m%s\x1b[0m", "Welcome to Ainab Stack CLI");
 
-  program
-    .argument("[project-name]", "Name of the project")
-    .option("-f, --force", "Overwrite existing directory", false)
-    .action(async (projectNameArg, options) => {
-      console.log(chalk.blue(`Welcome to Ainab Stack CLI`));
-      
-      let projectName = projectNameArg;
-      if (!projectName) {
-        projectName = await getProjectName();
-      }
+  if (!projectName) {
+    projectName = prompt("What is the name of your project?", "my-ainab-app") || "my-ainab-app";
+  }
 
-      if (!projectName) {
-        console.error(chalk.red("Project name is required."));
-        process.exit(1);
-      }
+  const targetDir = join(process.cwd(), projectName);
 
-      const targetDir = join(process.cwd(), projectName);
+  if (existsSync(targetDir) && !force) {
+    console.error("\x1b[31m%s\x1b[0m", `Directory ${projectName} already exists. Use --force to overwrite.`);
+    process.exit(1);
+  }
 
-      const scaffoldOptions: ScaffoldOptions = {
-        projectName,
-        targetDir,
-        force: options.force,
-      };
+  console.log("\x1b[32m%s\x1b[0m", `\nScaffolding project in ${targetDir}...`);
 
-      await scaffold(scaffoldOptions);
-    });
+  // When running via 'bun create user/repo', we are inside the cloned repo
+  // The template is in the 'template' folder relative to this script
+  const templateDir = join(import.meta.dir, "..", "template");
 
-  program.parse();
+  if (!existsSync(templateDir)) {
+    // Fallback for different execution contexts
+    console.error("\x1b[31m%s\x1b[0m", "Template directory not found.");
+    process.exit(1);
+  }
+
+  try {
+    cpSync(templateDir, targetDir, { recursive: true });
+    
+    // Update package.json name
+    const pkgPath = join(targetDir, "package.json");
+    if (existsSync(pkgPath)) {
+      const pkg = await Bun.file(pkgPath).json();
+      pkg.name = projectName;
+      await Bun.write(pkgPath, JSON.stringify(pkg, null, 2));
+    }
+
+    console.log("\x1b[34m%s\x1b[0m", `\nDone! Now run:\n`);
+    console.log(`  cd ${projectName}`);
+    console.log(`  bun install`);
+    console.log(`  bun dev\n`);
+  } catch (err) {
+    console.error("\x1b[31m%s\x1b[0m", "Failed to scaffold project:", err);
+    process.exit(1);
+  }
 }
