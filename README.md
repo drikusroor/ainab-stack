@@ -1,14 +1,37 @@
 # Ainab Stack
 
-## Verification
+The official CLI for the Ainab Stack.
 
-To verify the scaffolder's correctness and idempotency, run the verification script:
+## Usage
+
+You can scaffold a new project directly from this GitHub repository using Bun.
+
+### Via bun create
 
 ```bash
-bun run verify.ts
+bun create drikusroor/ainab-stack my-app
 ```
 
-Options:
-- `--verbose` (`-v`): Show full output from subprocesses.
-- `--keep` (`-k`): Keep the temporary directory after the run.
-- `--dir` (`-d`): Specify a custom directory to run verification in.
+### Via bunx
+
+```bash
+bunx github:drikusroor/ainab-stack my-app
+```
+
+## Options
+
+- `[project-name]`: Optional project name. If omitted, you'll be prompted.
+- `-f, --force`: Overwrite target directory if it exists.
+- `-v, --version`: Show version.
+- `-h, --help`: Show help.
+
+## Development
+
+1. Install dependencies:
+   ```bash
+   bun install
+   ```
+2. Test locally:
+   ```bash
+   bun ./bin/cli.ts my-test-app
+   ```

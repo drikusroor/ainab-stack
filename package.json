@@ -1,17 +1,10 @@
 {
-  "name": "@drikusroor/create-ainab-stack",
-  "version": "0.0.2",
+  "name": "ainab-stack",
+  "version": "0.0.1",
   "type": "module",
   "main": "src/index.ts",
   "bin": {
     "ainab-stack": "bin/cli.ts"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/drikusroor/ainab-stack.git"
   },
   "scripts": {
     "test": "bun test",
