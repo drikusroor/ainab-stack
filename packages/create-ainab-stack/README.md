@@ -1,4 +1,4 @@
-# @ainab/create-ainab-stack
+# @drikusroor/create-ainab-stack
 
 The official CLI for the Ainab Stack.
 
@@ -9,13 +9,13 @@ You can use the CLI to scaffold a new project using `bunx` or `bun create`.
 ### Via bunx
 
 ```bash
-bunx @ainab/create-ainab-stack my-app
+bunx @drikusroor/create-ainab-stack my-app
 ```
 
 ### Via bun create
 
 ```bash
-bun create @ainab/ainab-stack my-app
+bun create @drikusroor/ainab-stack my-app
 ```
 
 ## Options

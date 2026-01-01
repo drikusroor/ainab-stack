@@ -1,5 +1,5 @@
 {
-  "name": "@ainab/create-ainab-stack",
+  "name": "@drikusroor/create-ainab-stack",
   "version": "0.0.1",
   "type": "module",
   "main": "src/index.ts",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ainab/ainab-stack.git"
+    "url": "https://github.com/drikusroor/ainab-stack.git"
   },
   "scripts": {
     "test": "bun test",
