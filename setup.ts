@@ -115,12 +115,23 @@ await run([
 
 // 4. Configure Biome.js
 console.log("\n🧹 Configuring Biome...");
-// bun remove returns 0 even if package not found
-await run(["rm", "-f", "biome.json"]);
-await run(["bunx", "--bun", "biome", "init"]);
-await run(["bunx", "--bun", "biome", "migrate", "eslint", "--write"]);
-await run(["bun", "remove", "eslint", "eslint-config-next"]);
-await run(["rm", "-f", ".eslintrc.json", "eslint.config.mjs", "eslint.config.js"]);
+// Only init Biome if it's not already there or if we really want to reset
+if (!(await exists(join(projectPath, "biome.json")))) {
+  await run(["bunx", "--bun", "biome", "init"]);
+}
+
+// Check for ESLint config before trying to migrate
+const eslintConfigExists = (await exists(join(projectPath, ".eslintrc.json"))) || 
+                           (await exists(join(projectPath, "eslint.config.mjs"))) ||
+                           (await exists(join(projectPath, "eslint.config.js")));
+
+if (eslintConfigExists) {
+  await run(["bunx", "--bun", "biome", "migrate", "eslint", "--write"]);
+  await run(["bun", "remove", "eslint", "eslint-config-next"]);
+  await run(["rm", "-f", ".eslintrc.json", "eslint.config.mjs", "eslint.config.js"]);
+} else {
+  console.log("⏭️  No ESLint config found. Skipping migration...");
+}
 
 // Update package.json scripts
 console.log("\n📝 Updating package.json scripts...");
@@ -290,6 +301,63 @@ try {
   await run(["uvx", "--from", "git+https://github.com/github/spec-kit.git", "specify", "init", "--here", "--force", "--ai", "gemini"], projectPath);
 } catch (e) {
   console.warn("⚠️  Spec Kit skipped (uvx not found or failed).");
+}
+
+// 9.5 Final Polish
+console.log("\n✨ Polishing project...");
+
+// Fix tsconfig.json for Bun types
+const tsconfigPath = join(projectPath, "tsconfig.json");
+if (await exists(tsconfigPath)) {
+  const tsconfig = await Bun.file(tsconfigPath).json();
+  if (!tsconfig.compilerOptions) tsconfig.compilerOptions = {};
+  if (!tsconfig.compilerOptions.types) tsconfig.compilerOptions.types = [];
+  if (!tsconfig.compilerOptions.types.includes("bun-types")) {
+    tsconfig.compilerOptions.types.push("bun-types");
+    await write(tsconfigPath, JSON.stringify(tsconfig, null, 2));
+  }
+}
+
+// Ensure tailwind.config.ts exists (required for Shadcn)
+const tailwindConfigPath = join(projectPath, "tailwind.config.ts");
+if (!(await exists(tailwindConfigPath))) {
+  const defaultTailwindConfig = `
+import type { Config } from "tailwindcss";
+
+const config = {
+  darkMode: "class",
+  content: [
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+  ],
+  prefix: "",
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+    extend: {},
+  },
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config;
+
+export default config;
+`;
+  await write(tailwindConfigPath, defaultTailwindConfig);
+  // Also install tailwindcss-animate since we used it
+  await run(["bun", "add", "tailwindcss-animate"], projectPath);
+}
+
+// Run Biome to format everything
+try {
+  await run(["bun", "run", "lint:fix"], projectPath);
+} catch (e) {
+  console.warn("⚠️  Lint fix had some issues, but continuing.");
 }
 
 // 10. Initial Git Commit
